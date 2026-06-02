@@ -72,23 +72,37 @@ la-food-scout/
 ├── api/
 │   ├── main.py              # FastAPI app
 │   ├── requirements.txt
-│   └── Dockerfile
+│   ├── Dockerfile
+│   └── README.md
 ├── app/
 │   ├── streamlit_app.py     # Streamlit frontend
 │   ├── requirements.txt
-│   └── Dockerfile
+│   ├── Dockerfile
+│   └── README.md
 ├── data/
-│   └── la_restaurants.csv   # Collected dataset (2,443 restaurants)
+│   ├── la_restaurants.csv   # Collected dataset (2,443 restaurants)
+│   └── README.md            # Schema documentation
 ├── models/
-│   └── model.pkl            # Trained model artifact
+│   ├── model.pkl            # Trained model artifact
+│   └── README.md
+├── notebooks/
+│   ├── eda.ipynb            # Full EDA + methodology notebook
+│   ├── eda_charts.png       # EDA summary charts
+│   └── README.md
+├── presentations/
+│   ├── proposal/            # Proposal slides (May 2026)
+│   └── final/               # Final slides (June 2026)
 ├── scripts/
 │   ├── collect.py           # Google Places API data collection
 │   ├── train_model.py       # Model training
-│   └── eda.py               # EDA charts
-├── notebooks/
-│   └── eda_charts.png       # EDA visualizations
+│   ├── eda.py               # EDA chart generation
+│   └── README.md
 ├── tests/
-│   └── test_api.py          # API tests (7 tests)
+│   ├── test_api.py          # 7 automated API tests
+│   └── README.md
+├── docs/
+│   └── course-requirements.md
+├── .env.example
 ├── .dockerignore
 ├── .gitignore
 └── README.md
@@ -185,14 +199,14 @@ Response:
 ```bash
 # build
 podman build --platform linux/amd64 -f api/Dockerfile \
-  -t us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/api:latest .
+  -t us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/api:latest .
 
 # push
-podman push us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/api:latest
+podman push us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/api:latest
 
 # deploy
 gcloud run deploy la-food-scout-api \
-  --image us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/api:latest \
+  --image us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/api:latest \
   --platform managed --region us-central1 --port 8080 --allow-unauthenticated
 ```
 
@@ -200,14 +214,14 @@ gcloud run deploy la-food-scout-api \
 
 ```bash
 podman build --platform linux/amd64 -f app/Dockerfile \
-  -t us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/app:latest .
+  -t us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/app:latest .
 
-podman push us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/app:latest
+podman push us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/app:latest
 
 gcloud run deploy la-food-scout-app \
-  --image us-central1-docker.pkg.dev/YOUR_PROJECT/la-food-scout/app:latest \
+  --image us-central1-docker.pkg.dev/mtcars-fastapi-zach/la-food-scout/app:latest \
   --platform managed --region us-central1 --port 8080 --allow-unauthenticated \
-  --set-env-vars API_URL=https://YOUR_API_URL
+  --set-env-vars API_URL=https://la-food-scout-api-886054929408.us-central1.run.app
 ```
 
 ## AI Assistant Usage
