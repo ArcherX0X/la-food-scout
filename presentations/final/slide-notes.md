@@ -100,13 +100,21 @@ Packaged as a single `sklearn.Pipeline` — preprocessing is always bundled with
 
 ### Model Comparison
 
-| Model | CV ROC-AUC | Test ROC-AUC | High-Rated Recall |
-|---|---|---|---|
-| Logistic Regression | 0.678 ± 0.038 | 0.659 | 0.61 |
-| Gradient Boosting | 0.664 ± 0.032 | 0.654 | 0.29 ← poor |
-| **Random Forest (final)** | **0.659 ± 0.032** | **0.652** | **0.64** |
+| Model | CV ROC-AUC | Test ROC-AUC | HR Recall | HR Precision | Accuracy |
+|---|---|---|---|---|---|
+| Logistic Regression | 0.678 ± 0.038 | 0.659 | 0.61 | 0.51 | 0.61 |
+| Gradient Boosting | 0.664 ± 0.032 | 0.654 | 0.29 | 0.67 | 0.65 |
+| **Random Forest (final)** | **0.659 ± 0.032** | **0.652** | **0.64** | 0.48 | 0.57 |
+| MLP — 2 layers (64→32) | 0.664 ± 0.018 | 0.635 | 0.33 | 0.61 | 0.64 |
+| MLP — 3 layers (256→128→64) | 0.654 ± 0.024 | 0.642 | 0.18 | 0.64 | 0.62 |
 
-**Why Random Forest:** Gradient Boosting predicted "Not High-Rated" for almost everything (recall = 0.29). Random Forest with `class_weight="balanced"` maintained strong recall while keeping competitive AUC. We optimize for recall — missing a great restaurant is worse than a false alarm.
+**Why neural networks underperform here:**
+- **Dataset is too small** — 2,443 rows is far below the threshold where neural nets start to shine; they overfit or fail to generalize
+- **Mostly categorical features** — tree-based methods handle one-hot encoded categoricals natively; MLPs treat all inputs as continuous and lose the inherent structure
+- **No class imbalance handling** — `sklearn`'s `MLPClassifier` has no `class_weight` parameter, so both MLP variants collapse toward the majority class (recall 0.18–0.33)
+- **Result:** MLP (large) had the worst recall of all five models (0.18), meaning it almost always predicted "Not High-Rated"
+
+**Why Random Forest:** Only model that combined strong recall (0.64) with competitive AUC (0.652). `class_weight="balanced"` is the key — it internally upweights the minority class, preventing the model from ignoring high-rated restaurants entirely.
 
 ### Test Set Results (n = 489)
 
