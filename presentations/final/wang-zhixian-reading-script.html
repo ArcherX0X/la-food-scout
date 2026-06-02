@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA Food Scout — Reading Script</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #f5f5f0;
+      color: #222;
+      padding: 40px 20px;
+    }
+
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #1a1a1a;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 40px;
+      font-family: monospace;
+    }
+
+    .slide {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      border-left: 5px solid #ccc;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    .slide.s1 { border-color: #4A90D9; }
+    .slide.s2 { border-color: #E67E22; }
+    .slide.s3 { border-color: #27AE60; }
+    .slide.s4 { border-color: #8E44AD; }
+    .slide.s5 { border-color: #2980B9; }
+    .slide.s6 { border-color: #16A085; }
+    .slide.s7 { border-color: #C0392B; }
+
+    .slide-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .slide-num {
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    .slide-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #1a1a1a;
+    }
+
+    .timing {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: #aaa;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    .script {
+      font-size: 1.0rem;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .script p {
+      margin-bottom: 12px;
+    }
+
+    .script p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cue {
+      display: inline-block;
+      background: #FFF3CD;
+      border: 1px solid #FFEAA7;
+      border-radius: 4px;
+      padding: 1px 7px;
+      font-size: 0.82rem;
+      font-style: italic;
+      color: #856404;
+      font-family: monospace;
+      margin: 2px 0;
+    }
+
+    .total {
+      text-align: center;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 8px;
+      padding: 12px;
+      border-top: 1px dashed #ddd;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <h1>LA Food Scout — Reading Script</h1>
+  <div class="meta">Zhixian Wang &nbsp;|&nbsp; STAT 418 &nbsp;|&nbsp; June 2, 2026 &nbsp;|&nbsp; Target: 8–10 min</div>
+
+  <!-- Slide 1 -->
+  <div class="slide s1">
+    <div class="slide-header">
+      <span class="slide-num">Slide 1</span>
+      <span class="slide-title">Title</span>
+      <span class="timing">~20 sec</span>
+    </div>
+    <div class="script">
+      <p>Hi everyone, my name is Zhixian Wang, and my final project is called <strong>LA Food Scout</strong> — a machine learning app that predicts whether an LA restaurant is likely to be highly rated before you visit. The app is live, and I'll do a demo on slide 6. Let's get into it.</p>
+    </div>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide s2">
+    <div class="slide-header">
+      <span class="slide-num">Slide 2</span>
+      <span class="slide-title">Project Overview & Motivation</span>
+      <span class="timing">~1 min</span>
+    </div>
+    <div class="script">
+      <p>LA has over 30,000 restaurants, but Google ratings are almost useless for filtering — 89% of places are rated 4 stars or above. The real signal is the 4.5-star threshold, and only 41% of restaurants actually reach it.</p>
+      <p>So the question I wanted to answer is: can we predict whether a restaurant crosses that threshold using only publicly available metadata — neighborhood, cuisine type, price level, and review count?</p>
+      <p>My approach was to collect data from the Google Places API across 20 LA neighborhoods, train a binary classifier on that data, and serve predictions through a FastAPI backend and a Streamlit frontend, both deployed on Google Cloud Run.</p>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide s3">
+    <div class="slide-header">
+      <span class="slide-num">Slide 3</span>
+      <span class="slide-title">Data Collection & Preprocessing</span>
+      <span class="timing">~1.5 min</span>
+    </div>
+    <div class="script">
+      <p>I used the Google Places API's searchNearby endpoint to query 20 LA neighborhoods. The API caps results at 20 per call, so to get better coverage I used 5 search points per neighborhood — the center plus offsets north, south, east, and west. After de-duplicating by place ID, I ended up with <strong>2,443 unique restaurants</strong>.</p>
+      <p>For preprocessing: 26% of restaurants were missing a price level, so I imputed with the median. Review count was heavily right-skewed — ranging from 1 to 28,000 — so I log-transformed it. And I created the binary target: high-rated equals 1 if the rating is 4.5 stars or above.</p>
+      <p>A few EDA highlights you can see in the charts: Little Tokyo has the highest rate of high-rated restaurants at 63%, Monterey Park the lowest at 24%. And higher price tiers strongly correlate with higher ratings — very expensive restaurants are high-rated 75% of the time versus 36% for budget spots.</p>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide s4">
+    <div class="slide-header">
+      <span class="slide-num">Slide 4</span>
+      <span class="slide-title">Model Development & Evaluation</span>
+      <span class="timing">~2 min</span>
+    </div>
+    <div class="script">
+      <p>I compared five models: Logistic Regression, Gradient Boosting, Random Forest, and two MLP neural networks. The metric I cared most about was <strong>recall on the high-rated class</strong> — missing a great restaurant is a worse outcome than a false alarm.</p>
+      <p>Gradient Boosting had 65% accuracy but a recall of only 0.29 — it was basically predicting "not high-rated" for everything. The MLP models were even worse, with the larger network hitting a recall of 0.18. Neural networks underperform here for two reasons: the dataset is only 2,400 rows, and the features are mostly categorical — tree methods handle one-hot encoded data natively, and the MLP had no mechanism for class imbalance.</p>
+      <p>Random Forest with <code>class_weight="balanced"</code> was the winner — recall of 0.64 and the best AUC at 0.652. The balanced weighting upweights the minority class during training, which is what rescued the recall. And to be clear, its 57% accuracy isn't bad — a model predicting "not high-rated" for every single restaurant would score 59%.</p>
+      <p>On feature importance: place type accounts for 63% of the model's decisions. Types like convenience stores are never high-rated; Italian restaurants are 54% of the time. Review count is the strongest individual feature at 15%. Neighborhood and price matter but less so.</p>
+    </div>
+  </div>
+
+  <!-- Slide 5 -->
+  <div class="slide s5">
+    <div class="slide-header">
+      <span class="slide-num">Slide 5</span>
+      <span class="slide-title">Solution Architecture</span>
+      <span class="timing">~1 min</span>
+    </div>
+    <div class="script">
+      <p>The top section of the diagram is the offline pipeline — run once locally. I scraped the data, saved it as a CSV, and trained a scikit-learn Pipeline that bundles the preprocessor and the classifier into a single <code>model.pkl</code> file.</p>
+      <p>That artifact gets baked directly into the FastAPI container — no separate model store needed. I built both images with Podman targeting Linux AMD64, pushed them to Google Artifact Registry, and deployed two independent Cloud Run services. The Streamlit app calls the API's <code>/meta</code> endpoint on load to populate the dropdowns, and <code>/predict</code> on every button click. The API URL is injected as an environment variable at deploy time, keeping the two services fully decoupled.</p>
+    </div>
+  </div>
+
+  <!-- Slide 6 -->
+  <div class="slide s6">
+    <div class="slide-header">
+      <span class="slide-num">Slide 6</span>
+      <span class="slide-title">Application Features & Live Demo</span>
+      <span class="timing">~1.5 min</span>
+    </div>
+    <div class="script">
+      <p>The app has four inputs — neighborhood, place type, price level, and review count. The neighborhood and place type dropdowns are loaded live from the API, so nothing is hardcoded in the frontend.</p>
+      <p><span class="cue">[ Open the app — scan QR code or use the projected URL ]</span></p>
+      <p>You can see the dropdowns loading from the API on startup. Let me run a couple of predictions. First: <strong>Koreatown, Korean restaurant, moderate pricing, 500 reviews</strong>.</p>
+      <p><span class="cue">[ Click Predict Rating ]</span></p>
+      <p>About 40% probability — the model says probably not high-rated. Now let me try something that should score higher: <strong>Little Tokyo, Italian restaurant, expensive, 1,000 reviews</strong>.</p>
+      <p><span class="cue">[ Click Predict Rating ]</span></p>
+      <p>Higher probability. The neighborhood and place type are doing most of the work here, which lines up with what we saw in the feature importances.</p>
+    </div>
+  </div>
+
+  <!-- Slide 7 -->
+  <div class="slide s7">
+    <div class="slide-header">
+      <span class="slide-num">Slide 7</span>
+      <span class="slide-title">Challenges, Learnings & Future Work</span>
+      <span class="timing">~1 min</span>
+    </div>
+    <div class="script">
+      <p>Three main technical challenges. Class imbalance — solved with <code>class_weight="balanced"</code>, which doubled recall from 0.29 to 0.64. Cross-platform containers — my laptop is Apple Silicon but Cloud Run needs Linux AMD64, handled with Podman's <code>--platform</code> flag. And the API's 20-result cap per call — worked around with 5 search points per neighborhood.</p>
+      <p>On AI assistants — I used Claude Code throughout. It was strongest at scaffolding: it generated the full FastAPI setup, Streamlit app, Dockerfiles, and test suite from a single description, and handled all Cloud Run deployment. Where human judgment was still essential was deciding which features to use, interpreting what the data means about LA dining, and evaluating whether the model's behavior made real-world sense. The lesson: always review AI-generated code — it's fast but it doesn't understand your domain.</p>
+      <p>For future work: I'd most want to add SHAP explanations in the UI so users can see why a prediction was made, and a map view showing prediction probabilities across LA neighborhoods. Thank you — happy to take questions.</p>
+    </div>
+  </div>
+
+  <div class="total">Estimated total: ~8.5 minutes &nbsp;|&nbsp; Leave ~1 min buffer for transitions and questions setup</div>
+
+</div>
+</body>
+</html>
