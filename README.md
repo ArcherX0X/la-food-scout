@@ -17,8 +17,8 @@ Data is collected from the **Google Places API** across 20 LA neighborhoods. The
 
 | Service | URL |
 |---|---|
-| Streamlit App | _add after deployment_ |
-| FastAPI Docs | _add after deployment_ `/docs` |
+| Streamlit App | https://la-food-scout-app-886054929408.us-central1.run.app |
+| FastAPI Docs | https://la-food-scout-api-886054929408.us-central1.run.app/docs |
 
 ## Architecture
 
